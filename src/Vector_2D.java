@@ -1,6 +1,9 @@
 import java.lang.Math;
 
 public class Vector_2D {
+    private boolean deleted = false;
+    private static int next_id = 0;
+    int id;
     float x;
     float y;
 
@@ -8,6 +11,13 @@ public class Vector_2D {
     public Vector_2D (float x, float y) {
         this.x = x;
         this.y = y;
+        this.id = next_id;
+        next_id++;
+    }
+
+    public void addToThis (Vector_2D addend) {
+        this.x += addend.x;
+        this.y += addend.y;
     }
 
     public Vector_2D add (Vector_2D addend) {
@@ -26,6 +36,14 @@ public class Vector_2D {
     public float length () {
         return (float) (Math.sqrt(this.x * this.x + this.y * this.y));
 
+    }
+
+    public void delete() {
+        this.deleted = true;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
     }
 
     @Override

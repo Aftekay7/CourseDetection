@@ -1,9 +1,11 @@
+import java.awt.*;
 import java.util.LinkedList;
 
 public class Main {
     public static void main(String[] args) {
         LinkedList<Vector_2D> map = new LinkedList<Vector_2D>();
         initMap(map);
+        Clustering.cluster(map);
     }
 
 
@@ -65,12 +67,14 @@ public class Main {
         map.add(new Vector_2D(12,-17));
         map.add(new Vector_2D(11,-16));
         map.add(new Vector_2D(7,-14));
-        map.add(new Vector_2D(18,-37));
-        map.add(new Vector_2D(15,-35));
-        map.add(new Vector_2D(13,-34));
-        map.add(new Vector_2D(11,-32));
-        map.add(new Vector_2D(9,-31));
-        map.add(new Vector_2D(7,-29));
+
+        map.add(new Vector_2D(18,-27));
+        map.add(new Vector_2D(15,-25));
+        map.add(new Vector_2D(13,-24));
+        map.add(new Vector_2D(11,-22));
+        map.add(new Vector_2D(9,-21));
+
+        map.add(new Vector_2D(7,-19));
         map.add(new Vector_2D(4.5f, -17));
         map.add(new Vector_2D(1.5f, -17));
         map.add(new Vector_2D(-2,-18));
@@ -124,6 +128,7 @@ public class Main {
         map.add(new Vector_2D(-25, -25));
         map.add(new Vector_2D(-24.5f, -21));
         map.add(new Vector_2D(-23.5f, -17.5f));
+        map.add(new Vector_2D(-22.5f, -14.5f));
         map.add(new Vector_2D(-21, -9));
         map.add(new Vector_2D(-18.5f, -6.5f));
         map.add(new Vector_2D(-15.5f, -4));
@@ -149,7 +154,7 @@ public class Main {
         map.add(new Vector_2D(-22, -37));
         map.add(new Vector_2D(-21.5f, -39.5f));
         map.add(new Vector_2D(-21, -41));
-        map.add(new Vector_2D(-19, 44.5f));
+        map.add(new Vector_2D(-19, -44.5f));
         map.add(new Vector_2D(-17.5f, -46.5f));
         map.add(new Vector_2D(-16, -48.5f));
         map.add(new Vector_2D(-14, -50.5f));
@@ -169,7 +174,7 @@ public class Main {
         map.add(new Vector_2D(26, -68.5f));
         map.add(new Vector_2D(26, -66));
         map.add(new Vector_2D(25, -63.5f));
-        map.add(new Vector_2D(23.5f, -57));
+        map.add(new Vector_2D(21.5f, -57));
         map.add(new Vector_2D(20, -55));
         map.add(new Vector_2D(16.5f, -53));
         map.add(new Vector_2D(13, -52.5f));
