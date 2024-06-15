@@ -4,52 +4,45 @@ import java.lang.Math;
 import java.util.Scanner;
 
 public class Clustering {
-    private static float delta = 15;   //defines the radius (in meters) in which trajectory points are adjusted
-    private static final float theta = 0.01F;  //defines the distance within which centers are combined
-    private static final int epochs = 200; //number of epochs that are performed
-    private static int epoch = 1;
-
-    private static float delta_sz = delta / epochs;
-    private static final int uniteAfter = (7 * epochs) / 10 ; //defines the number of epochs after which centers that are
+    private static final float delta = 10;   //defines the radius (in meters) in which trajectory points are adjusted
+    private static final float theta = 1F;  //defines the distance within which centers are combined
+    private static final float roh = 1F;      //defines the minimum distance between two centers
+    private static final int epochs = 100; //number of epochs that are performed
+    private static final int uniteAfter = (int) (0.5f * epochs) ; //defines the number of epochs after which centers that are
     private static int startingCenters; //defines the number of centers that are initialized in the first epoch
     private static final Vector_2D offset = new Vector_2D(15, 15);
     private static LinkedList<Vector_2D> centers;
     private static LinkedList<Vector_2D> map;
-    private static Renderer renderer = new Renderer();
+    static Renderer renderer = new Renderer();
     private static Scanner scanner = new Scanner(System.in);
 
-    private static final float MIN_TRACK_WIDTH = 3f;
+    private static final float MIN_TRACK_WIDTH = 3.0f;  //min track width in meter
 
     public static LinkedList<Vector_2D> cluster(LinkedList<Vector_2D> input) {
         map = input;
-        startingCenters = map.size() * 100;
-        System.out.println(map.size());
+        startingCenters = map.size() * 10;
         initCenters();
-        renderer.setLists(centers, map);
-        renderer.updatePoints();
+        renderer.setLists(centers,map);
 
         for (int i = 0; i < epochs; i++) {
-            scanner.nextLine();
 
             for (Vector_2D center : centers) {
                 updateCenter(center);
             }
 
-            if (i >= uniteAfter) {
+
+            if (i > epochs * 0.1f && i < epochs * 0.5f || i > 0.8f * epochs) {
                 uniteCenters();
             }
-            removeDeleted();
 
-            renderer.updatePoints();
-            epoch++;
-
-            if (delta > 2 * MIN_TRACK_WIDTH) {
-                delta -= delta_sz;
+            if (i >= epochs * 0.6f && i <= 0.65f * epochs) {
+               deflectCenters();
             }
 
+            if (i % 15 == 0 || i < 5) {
+                removeDeleted();
+            }
         }
-
-
         return centers;
     }
 
@@ -64,7 +57,7 @@ public class Clustering {
             centers.add(vec.add(v));
         }
 
-
+        /*
 
         Vector_2D[] corners = getCorners(map);
         Vector_2D start = corners[0].sub(offset);
@@ -96,6 +89,8 @@ public class Clustering {
             iterator = start;
         }
 
+
+         */
 
 
     }
@@ -150,14 +145,6 @@ public class Clustering {
         }
 
         update.scale((1f / update_count));
-        /*
-        float s = 1f / epoch;
-        if (s < 0.1) {
-            s = 0.1f;
-        }
-
-        update.scale(s);
-         */
         center.addToThis(update);
     }
 
@@ -178,6 +165,55 @@ public class Clustering {
         }
     }
 
+    private static void deflectCenters () {
+        for (Vector_2D center : centers) {
+            if (center.isDeleted()) {
+                continue;
+            }
+
+            for (Vector_2D other : centers) {
+                if (!other.isDeleted() && center.id != other.id && MathHelpers.distance(center, other) < roh) {
+
+                    Vector_2D dist = other.sub(center);
+                    dist.scale(5f);
+                    other.addToThis(dist);
+                    dist.scale(-1);
+                    center.addToThis(dist);
+                }
+            }
+        }
+    }
+
+    private static void explodeCenters() {
+        LinkedList<Vector_2D> buf = new LinkedList<>();
+        for (Vector_2D center : centers) {
+            if (center.isDeleted()) {
+                continue;
+            }
+
+            for (Vector_2D other : centers) {
+                if (!other.isDeleted() && center.id != other.id && MathHelpers.distance(center, other) < roh) {
+
+                    Vector_2D dist = other.sub(center);
+                    dist.scale(5);
+                    Vector_2D dist2 = new Vector_2D(dist.y,dist.x);
+                    dist2.scale(5);
+
+
+                    buf.add(other.add(dist2));
+                    other.addToThis(dist);
+                    dist.scale(-1);
+                    dist2.scale(-1);
+                    buf.add(center.add(dist2));
+                    center.addToThis(dist);
+
+
+                }
+            }
+        }
+        centers.addAll(buf);
+    }
+
     private static void removeDeleted() {
         Iterator<Vector_2D> it = centers.iterator();
         while (it.hasNext()) {
@@ -191,10 +227,10 @@ public class Clustering {
     private static float calcWeight(float dist) {
         float weight;
         if (dist > MIN_TRACK_WIDTH) {
-            weight = 9 / (dist * dist);
+            weight = MIN_TRACK_WIDTH * MIN_TRACK_WIDTH / (dist * dist);
 
-        } else if (dist >= 0.5 * MIN_TRACK_WIDTH) {
-            weight = 1.333f * (dist - 2.25f);
+        } else if (dist >= 0.5f * MIN_TRACK_WIDTH) {
+            weight = (2/(MIN_TRACK_WIDTH - 0.5f * MIN_TRACK_WIDTH))  * (dist - MIN_TRACK_WIDTH * 0.5f);
 
         } else {
             weight = -1f;

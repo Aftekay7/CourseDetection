@@ -7,10 +7,10 @@ public class Renderer extends JPanel {
     private LinkedList<Vector_2D> cones;
     private LinkedList<Vector_2D> centers;
     private LinkedList<Vector_2D> axis;
-    private final int PIXEL_PER_METER = 7;
+    private final int PIXEL_PER_METER = 10;
     private int WIDTH = 900;
     private int HEIGHT = 1080;
-    private final int OFFSET_X = WIDTH / 3;
+    private final int OFFSET_X = WIDTH / 2;
     private final int OFFSET_Y = HEIGHT / 6;
 
     public Renderer () {
@@ -54,6 +54,9 @@ public class Renderer extends JPanel {
         // Draw centers
         g.setColor(Color.RED);
         for (Vector_2D vec : centers) {
+            if (vec.isDeleted()) {
+                continue;
+            }
             x = (int) (vec.x * PIXEL_PER_METER);
             y = (int) (vec.y * PIXEL_PER_METER * -1);
             x += -2 + OFFSET_X;

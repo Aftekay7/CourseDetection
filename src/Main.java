@@ -1,11 +1,22 @@
 import java.awt.*;
 import java.util.LinkedList;
 
+import static java.lang.System.currentTimeMillis;
+
 public class Main {
     public static void main(String[] args) {
         LinkedList<Vector_2D> map = new LinkedList<Vector_2D>();
+
         initMap(map);
-        Clustering.cluster(map);
+
+        double start = currentTimeMillis();
+        LinkedList<Vector_2D> cluster = Clustering.cluster(map);
+        double end = currentTimeMillis();
+        LinkedList<Vector_2D> centers = (LinkedList<Vector_2D>) cluster.clone();
+        Clustering.renderer.setLists(centers,map);
+        Clustering.renderer.updatePoints();
+
+        System.out.println("this clustering took " + (end - start) + "ms");
     }
 
 
