@@ -1,6 +1,7 @@
 import java.lang.Math;
 
 public class Vector_2D {
+    private boolean nearest = false;
     private boolean deleted = false;
     private static int next_id = 0;
     int id;
@@ -46,8 +47,38 @@ public class Vector_2D {
         return deleted;
     }
 
+    public Vector_2D copy() {
+        return new Vector_2D(this.x,this.y);
+    }
+
+    public boolean isNearest() {
+        return nearest;
+    }
+
+    public void setNearest(boolean nearest) {
+        this.nearest = nearest;
+    }
+
+    public Vector_2D rotateCW(float alpha) {
+        float x = (float) (Math.cos(alpha) * this.x + Math.sin(alpha) * this.y);
+        float y = (float) (-1 * Math.sin(alpha) * this.x + Math.cos(alpha) * this.y);
+
+        return new Vector_2D(x,y);
+    }
+
+    public Vector_2D normalize() {
+        float length = this.length();
+        return new Vector_2D(this.x / length, this.y / length);
+    }
+
+    public void normalizeThis() {
+        float length = this.length();
+        this.x /= length;
+        this.y /= length;
+    }
+
     @Override
     public String toString() {
-        return "(" + x + "," + y + ")";
+        return "(id: " + id + ";" + x + "," + y + ")";
     }
 }
